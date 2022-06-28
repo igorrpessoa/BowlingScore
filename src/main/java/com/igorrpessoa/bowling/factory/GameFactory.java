@@ -25,23 +25,15 @@ public class GameFactory {
         String currentPlayer;
         List<Round> roundList;
         Boolean nextRound = true;
-        Pattern p = Pattern.compile("(?<!\\S)\\d(?!\\S)|(10)|(F)");
+        Round round;
         for (String line : gameInput.split(END_LINE)) {
-            if(Strings.isEmpty(line)) {
-                throw new FileFormatException(ErrorMessagesEnum.FILE_FORMAT_ERROR_EMPTY_ENTRIES.getDescription());
-            }
+
+            validateFileFormat(line);
+
             String[] splitLine = line.split(TAB);
-            if(splitLine.length < 2){
-                throw new FileFormatException(ErrorMessagesEnum.FILE_FORMAT_ERROR_PATTERN_NOT_ACCEPTED.getDescription());
-            }
-            currentPlayer = splitLine[0];
             String pinfallString = splitLine[1];
-            if(!p.matcher(pinfallString).matches()){
-                throw new FileFormatException(ErrorMessagesEnum.FILE_FORMAT_ERROR_PATTERN_NOT_ACCEPTED.getDescription());
-            }
 
-            Round round;
-
+            currentPlayer = splitLine[0];
             Player player = new Player(currentPlayer);
             if(!playerMap.containsKey(player)) {
                 roundList = new ArrayList<>();
@@ -54,13 +46,33 @@ public class GameFactory {
                     round = addPinfallToExistingRound(roundList, pinfallString);
                 }
             }
-            if(roundList.size() > 10) {
-                throw new RuleException(ErrorMessagesEnum.RULE_ERROR_EXTRA_ROUNDS.getDescription());
-            }
+            validateRule(roundList);
+
             nextRound = isFinishedAddingLastRound(round) || isStrikeOrFinishedReadingRegularRound(pinfallString, round);
             playerMap.put(player, roundList);
         }
         return Game.builder().playerMap(playerMap).build();
+    }
+
+    private static void validateRule(List<Round> roundList) throws RuleException {
+        if(roundList.size() > 10) {
+            throw new RuleException(ErrorMessagesEnum.RULE_ERROR_EXTRA_ROUNDS.getDescription());
+        }
+    }
+
+    private static void validateFileFormat(String line) throws FileFormatException {
+        if(Strings.isEmpty(line)) {
+            throw new FileFormatException(ErrorMessagesEnum.FILE_FORMAT_ERROR_EMPTY_ENTRIES.getDescription());
+        }
+        String[] splitLine = line.split(TAB);
+        if(splitLine.length < 2){
+            throw new FileFormatException(ErrorMessagesEnum.FILE_FORMAT_ERROR_PATTERN_NOT_ACCEPTED.getDescription());
+        }
+        Pattern p = Pattern.compile("(?<!\\S)\\d(?!\\S)|(10)|(F)");
+        String pinfallString = splitLine[1];
+        if(!p.matcher(pinfallString).matches()){
+            throw new FileFormatException(ErrorMessagesEnum.FILE_FORMAT_ERROR_PATTERN_NOT_ACCEPTED.getDescription());
+        }
     }
 
     private static Round addPinfallToExistingRound(List<Round> roundList, String pinfallString) {
