@@ -1,6 +1,6 @@
 package com.igorrpessoa.bowling.integTest;
 
-import com.igorrpessoa.bowling.model.ErrorMessagesEnum;
+import com.igorrpessoa.bowling.exception.ErrorMessagesEnum;
 import com.igorrpessoa.bowling.exception.FileFormatException;
 import com.igorrpessoa.bowling.exception.RuleException;
 import com.igorrpessoa.bowling.service.GameService;

@@ -1,6 +1,6 @@
 package com.igorrpessoa.bowling.service;
 
-import com.igorrpessoa.bowling.model.ErrorMessagesEnum;
+import com.igorrpessoa.bowling.exception.ErrorMessagesEnum;
 import com.igorrpessoa.bowling.exception.RuleException;
 import com.igorrpessoa.bowling.exception.FileFormatException;
 import com.igorrpessoa.bowling.factory.GameFactory;
@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.nio.file.InvalidPathException;
 
 @Service

@@ -1,6 +1,6 @@
 package com.igorrpessoa.bowling.service;
 
-import com.igorrpessoa.bowling.model.ErrorMessagesEnum;
+import com.igorrpessoa.bowling.exception.ErrorMessagesEnum;
 import org.springframework.stereotype.Service;
 
 import java.io.*;

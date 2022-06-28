@@ -20,21 +20,19 @@ public class ScoreService {
     }
 
     protected Integer calculateRound(Round round, List<Round> roundList, Integer score) {
-        int currentSum = 0;
+        int spareSum = 0;
         for (String pinfall : round.getPinfallList()) {
-            if (pinfall.equals("F")) {
-                score += 0;
-            } else {
-                currentSum += Integer.parseInt(pinfall);
+            if (!pinfall.equals("F")) {
+                spareSum += Integer.parseInt(pinfall);
                 score += Integer.parseInt(pinfall);
 
                 if (!round.getRoundNumber().equals(10)) {
                     //STRIKE
                     if (pinfall.equals("10")) {
-                        score = scoreStrike(round, roundList, score);
+                        score = scoreStrike(roundList, round.getRoundNumber(), score);
                     //SPARE
-                    } else if (currentSum == 10) {
-                        score = scoreSpare(round, roundList, score);
+                    } else if (spareSum == 10) {
+                        score = scoreSpare(roundList, round.getRoundNumber(), score);
                     }
                 }
             }
@@ -42,41 +40,40 @@ public class ScoreService {
         return score;
     }
 
-    private Integer scoreStrike(Round round, List<Round> roundList, Integer score) {
-        List<String> pinfallList;
+    private Integer scoreStrike(List<Round> roundList, int roundNumber, Integer score) {
 
-        score = scoreNextRoundPinfall(roundList, score, round.getRoundNumber(), 0);
+        String pinfall = getPinfall(roundList, roundNumber, 0);
+        score = scoreRoundPinfall(score, pinfall);
 
-        pinfallList = roundList.get(round.getRoundNumber()).getPinfallList();
         //get next pinfall if was not an strike
-        if (pinfallList.size() > 1) {
-            score = scoreNextRoundPinfall(roundList, score, round.getRoundNumber(), 1);
-        } else {
+        if (pinfall.equals("10") && roundNumber < 9) {
             //get next round if was another strike
-            score = scoreNextRoundPinfall(roundList, score, round.getRoundNumber() + 1, 0);
-
+            score = scoreRoundPinfall(score, getPinfall(roundList, roundNumber + 1, 0));
+        } else {
+            score = scoreRoundPinfall(score, getPinfall(roundList, roundNumber, 1));
         }
 
         return score;
     }
 
-    private Integer scoreSpare(Round round, List<Round> roundList, Integer score) {
+    private String getPinfall(List<Round> roundList, int round, int index) {
+        return roundList.get(round).getPinfallList().get(index);
+    }
+
+    private Integer scoreSpare(List<Round> roundList, Integer roundNumber , Integer score) {
         //verify if it is not last round
-        if (!round.getRoundNumber().equals(10)) {
+        if (!roundNumber.equals(10)) {
             //get next round pinfall
-            score = scoreNextRoundPinfall(roundList, score, round.getRoundNumber(), 0);
+            score = scoreRoundPinfall(score, getPinfall(roundList, roundNumber, 0));
         }
         return score;
     }
 
-    private Integer scoreNextRoundPinfall(List<Round> roundList, Integer score, Integer roundNumber, Integer pinfallNumber) {
-        List<String> pinfallList;
-        pinfallList = roundList.get(roundNumber).getPinfallList();
-        String sparePinfall = pinfallList.get(pinfallNumber);
-        if (sparePinfall.equals("F")) {
+    private Integer scoreRoundPinfall(Integer score, String pinfall) {
+        if (pinfall.equals("F")) {
             score += 0;
         } else {
-            score += Integer.parseInt(sparePinfall);
+            score += Integer.parseInt(pinfall);
         }
         return score;
     }

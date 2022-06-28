@@ -1,4 +1,4 @@
-package com.igorrpessoa.bowling.model;
+package com.igorrpessoa.bowling.exception;
 
 public enum ErrorMessagesEnum {
 
